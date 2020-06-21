@@ -1,0 +1,9 @@
+-i https://pypi.org/simple
+audioread==2.1.8
+certifi==2020.6.20
+chardet==3.0.4
+idna==2.9
+numpy==1.19.0
+pyacoustid==1.2.0
+requests==2.24.0
+urllib3==1.25.9

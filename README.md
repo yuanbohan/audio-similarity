@@ -2,11 +2,22 @@
 
 check similarity by acoustic fingerprint
 
+## prerequisites
+
+- ffmpeg
+- chromaprint
+- pipenv
+
+## setup
+
+- `pipenv install`
+- `pipenv shell`
+- `python app.py`
+
 ## steps
 
-- download videos
-- extract all videos to mp3 audio files
-- extract acoustic fingerprint for all mp3 audio files
+- extract all videos to aac audio files with first 10 seconds
+- extract acoustic fingerprint
 - check if audios in each group are similar
 
 ## resources
@@ -19,3 +30,4 @@ check similarity by acoustic fingerprint
 - https://medium.com/intrasonics/a-fingerprint-for-audio-3b337551a671
 - https://yohanes.gultom.me/2018/03/24/simple-music-fingerprinting-using-chromaprint-in-python/
 - https://acoustid.org/
+- https://github.com/worldveil/dejavu
