@@ -2,14 +2,13 @@ import os
 import subprocess
 import re
 
-import numpy
 import acoustid
 import chromaprint
 
 
-AUDIO_EXTENSION = '.aac'
 SPAN = 10
-STEP = 1
+AUDIO_EXTENSION = '.aac'
+SIMILARITY_THRESHOLD = 0.9
 
 
 def get_name_without_extension(filename):
@@ -27,61 +26,55 @@ def extract_audios(input_file):
     if not os.path.exists(folder_name):
         os.makedirs(folder_name)
 
-    # TODO:
-    # index to display progress
-    # check if audio file already exist
     with open(input_file, 'r') as reader:
         FNULL = open(os.devnull, 'w')
-        for url in reader:
+        for _cnt, url in enumerate(reader):
             url = url.strip()
             matched = re.match(
                 r'^http://ark.tubi.video/(.+)/.+.mp4$', url, re.M | re.I)
             if matched:
                 audio_file_name = matched.group(1) + AUDIO_EXTENSION
                 audio_path = os.path.join(folder_name, audio_file_name)
-
-                # extract audio with first 10 seconds
-                command = f"ffmpeg -t 10 -i {url} -vn {audio_path}"
-                print(command)
-                subprocess.call(command, stderr=FNULL, shell=True)
+                if not os.path.exists(audio_path):
+                    # extract audio with first 10 seconds
+                    command = f"ffmpeg -t 15 -i {url} -vn {audio_path}"
+                    subprocess.call(command, stderr=FNULL, shell=True)
 
 
 def check_audio_similarity(audio1, audio2):
-    """
-    select max correlation with offset between [-span, span]
-    """
     fp1, _duration1 = calc_fingerprint(audio1)
     fp2, _duration2 = calc_fingerprint(audio2)
-    correlations = []
-    for offset in numpy.arange(-SPAN, SPAN + 1, STEP):
-        correlations.append(cross_correlation(fp1, fp2, offset))
-    return max(correlations)
+    return correlation(fp1, fp2)
 
 
-def cross_correlation(fp1, fp2, offset):
+def correlation(fp1, fp2):
     """
     check similarity of 2 audio files
     """
-    if offset > 0:
-        fp1 = fp1[offset:]
-        fp2 = fp2[:len(fp1)]
-    elif offset < 0:
-        offset = -offset
-        fp2 = fp2[offset:]
-        fp1 = fp1[:len(fp2)]
+    covariances = []
+    for offset in range(-SPAN, SPAN):
+        length = min(len(fp1), len(fp2)) - abs(offset)
+        if offset > 0:
+            fp1 = fp1[offset:(offset + length)]
+            fp2 = fp2[offset:(offset + length)]
+        else:
+            fp1 = fp1[:length]
+            fp2 = fp2[:length]
 
-    size = len(fp1)
-    covariance = 0
-    for i in range(size):
-        covariance += 32 - bin(fp1[i] ^ fp2[i]).count('1')
-    covariance = covariance / float(size)
-    return covariance/32
+        covariance = 0
+        for i in range(length):
+            covariance += 32 - bin(fp1[i] ^ fp2[i]).count('1')
+        covariance = covariance / float(length)
+        covariances.append(covariance / 32)
+    return max(covariances)
 
 
-def is_group_similar(folder):
+def is_group_similar(filename):
     """
     check all audios similarity under one folder
     """
+    folder = get_name_without_extension(filename)
+
     base = None
 
     similarities = []
@@ -96,13 +89,16 @@ def is_group_similar(folder):
             continue
         else:
             similarity = check_audio_similarity(base, path)
+
             similarities.append(similarity)
 
-    return all(x >= 0.8 for x in similarities)
+    # print(similarities)
+    similar = all(x >= SIMILARITY_THRESHOLD for x in similarities)
+    return (len(similarities), similar)
 
 
 def calc_fingerprint(audiofile):
-    duration, fp_encoded = acoustid.fingerprint_file(audiofile, maxlength=10)
+    duration, fp_encoded = acoustid.fingerprint_file(audiofile)
     fingerprint, _version = chromaprint.decode_fingerprint(fp_encoded)
     return (fingerprint, duration)
 
@@ -111,6 +107,5 @@ if __name__ == '__main__':
     files = ["videos_group1.txt", "videos_group2.txt"]
     for filename in files:
         extract_audios(filename)
-        folder = get_name_without_extension(filename)
-        similar = is_group_similar(folder)
-        print(f"{folder} similar={similar}")
+        count, similar = is_group_similar(filename)
+        print(f"{filename} count={count} similar={similar}")

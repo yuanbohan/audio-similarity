@@ -16,9 +16,9 @@ check similarity by acoustic fingerprint
 
 ## steps
 
-- extract all videos to aac audio files with first 10 seconds
+- extract all videos to aac audio files with first 15 seconds
 - extract acoustic fingerprint
-- check if audios in each group are similar
+- check if all audios in each group are similar
 
 ## resources
 
