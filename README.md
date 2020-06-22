@@ -2,6 +2,8 @@
 
 check similarity by acoustic fingerprint
 
+`videos_group1.txt` and `videos_group2.txt` are similar, while `mix.txt` are not
+
 ## prerequisites
 
 - ffmpeg
@@ -26,7 +28,6 @@ check similarity by acoustic fingerprint
 - https://en.wikipedia.org/wiki/Acoustic_fingerprint
 - https://docs.acrcloud.com/docs/acrcloud/introduction/audio-fingerprinting/
 - https://oxygene.sk/2011/01/how-does-chromaprint-work/
-- https://github.com/worldveil/dejavu
 - https://medium.com/intrasonics/a-fingerprint-for-audio-3b337551a671
 - https://yohanes.gultom.me/2018/03/24/simple-music-fingerprinting-using-chromaprint-in-python/
 - https://acoustid.org/

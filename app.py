@@ -92,7 +92,7 @@ def is_group_similar(filename):
 
             similarities.append(similarity)
 
-    # print(similarities)
+    print(similarities)
     similar = all(x >= SIMILARITY_THRESHOLD for x in similarities)
     return (len(similarities), similar)
 
@@ -104,7 +104,7 @@ def calc_fingerprint(audiofile):
 
 
 if __name__ == '__main__':
-    files = ["videos_group1.txt", "videos_group2.txt"]
+    files = ["videos_group1.txt", "videos_group2.txt", "mix.txt"]
     for filename in files:
         extract_audios(filename)
         count, similar = is_group_similar(filename)
