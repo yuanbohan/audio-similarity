@@ -1,8 +1,8 @@
--i https://pypi.org/simple
-audioread==2.1.8
-certifi==2020.6.20
-chardet==3.0.4
-idna==2.9
+-i https://pypi.org/simple/
+audioread==2.1.9
+certifi==2021.5.30
+chardet==4.0.0
+idna==2.10
 pyacoustid==1.2.0
-requests==2.24.0
-urllib3==1.25.9
+requests==2.25.1
+urllib3==1.26.5
