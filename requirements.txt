@@ -1,6 +1,6 @@
 -i https://pypi.org/simple/
 audioread==2.1.9
-certifi==2021.5.30
+certifi==2022.12.7
 chardet==4.0.0
 idna==2.10
 pyacoustid==1.2.0
